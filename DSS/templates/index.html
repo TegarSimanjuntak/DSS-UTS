@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Aplikasi Pengambilan Keputusan</title>
+</head>
+<body>
+    <h1>Input Kriteria dan Alternatif</h1>
+    <form action="/calculate" method="POST">
+        <label for="criteria_count">Jumlah Kriteria:</label>
+        <input type="number" id="criteria_count" name="criteria_count" required>
+        
+        <label for="alternatives_count">Jumlah Alternatif:</label>
+        <input type="number" id="alternatives_count" name="alternatives_count" required>
+        
+        <label for="method">Pilih Metode:</label>
+        <select id="method" name="method">
+            <option value="saw">SAW (Simple Additive Weighting)</option>
+            <option value="wp">WP (Weighted Product)</option>
+            <option value="topsis">TOPSIS</option>
+            <option value="ahp">AHP (Analytical Hierarchy Process)</option>
+        </select>
+
+        <div id="criteria_inputs"></div>
+        <div id="alternatives_inputs"></div>
+
+        <button type="button" id="add_criteria">Tambah Kriteria</button>
+        <button type="button" id="add_alternative">Tambah Alternatif</button>
+
+        <input type="submit" value="Hitung">
+    </form>
+
+    <script>
+        document.getElementById('add_criteria').addEventListener('click', function() {
+            const criteriaDiv = document.createElement('div');
+            criteriaDiv.innerHTML = `
+                <input type="text" name="criteria" placeholder="Nama Kriteria" required>
+                <input type="number" name="weights" placeholder="Bobot Kriteria (0-1)" step="0.001" min="0" max="1" required>
+            `;
+            document.getElementById('criteria_inputs').appendChild(criteriaDiv);
+        });
+
+        document.getElementById('add_alternative').addEventListener('click', function() {
+            const altCount = document.getElementsByName('alternatives').length;
+            const alternativesDiv = document.createElement('div');
+            alternativesDiv.innerHTML = `
+                <input type="text" name="alternatives" placeholder="Nama Alternatif" required>
+                ${Array.from({ length: parseInt(document.getElementById('criteria_count').value) }, (_, i) =>
+                    `<input type="number" name="scores_${altCount}" placeholder="Skor Kriteria ${i + 1}" required min="0" max="100" step="0.001">`
+                ).join('')}
+            `;
+            document.getElementById('alternatives_inputs').appendChild(alternativesDiv);
+        });
+    </script>
+</body>
+</html>
